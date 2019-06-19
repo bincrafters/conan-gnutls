@@ -9,14 +9,15 @@ class GnuTLSConan(ConanFile):
     version = "3.6.8"
     url = "https://github.com/bincrafters/conan-gnutls"
     homepage = "https://www.gnutls.org"
-    description = "A secure communications library implementing the SSL, TLS and DTLS protocols and technologies around them"
+    description = "GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols"
     author = "Bincrafters <bincrafters@gmail.com>"
     license = "LGPL-2.1"
     exports = ["LICENSE.md"]
+    exports_sources = ["0001-macosx_no_weak_imports.patch", "0002-pkgconfig.patch", "0003-Fix-libcrypto-test-it-must-always-fail.patch"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {'shared': False, 'fPIC': True}
-    requires = ("nettle/3.4.1@bincrafters/stable", "gmp/6.1.2@bincrafters/stable")
+    requires = "nettle/3.4.1@bincrafters/stable", "gmp/6.1.2@bincrafters/stable", "libiconv/1.15@bincrafters/stable"
     _autotools = None
 
     @property
@@ -38,12 +39,30 @@ class GnuTLSConan(ConanFile):
     def _configure_autotools(self):
         if not self._autotools:
             self._autotools = AutoToolsBuildEnvironment(self)
-            configure_args = ["--disable-tests"]
+            configure_args = ["--disable-tests",
+                              "--disable-full-test-suite",
+                              "--disable-maintainer-mode",
+                              "--without-p11-kit",
+                              "--without-idn",
+                              "--with-included-libtasn1",
+                              "--enable-local-libopts",
+                              "--with-included-unistring",
+                              "--with-libiconv-prefix={}".format(self.deps_cpp_info["libiconv"].rootpath)]
+            configure_vars = self._autotools.vars
+            configure_vars.update({
+                "NETTLE_CFLAGS": "-I{}".format(self.deps_cpp_info["nettle"].include_paths[0]),
+                "NETTLE_LIBS": "-L{} -lnettle".format(self.deps_cpp_info["nettle"].lib_paths[0]),
+                "HOGWEED_CFLAGS": "-I{}".format(self.deps_cpp_info["nettle"].include_paths[0]),
+                "HOGWEED_LIBS": "-L{} -lhogweed".format(self.deps_cpp_info["nettle"].lib_paths[0]),
+                "GMP_CFLAGS": "-I{}".format(self.deps_cpp_info["gmp"].include_paths[0]),
+                "GMP_LIBS": "-L{} -lgmp".format(self.deps_cpp_info["gmp"].lib_paths[0]),
+            })
+
             if self.options.shared:
                 configure_args.extend(["--enable-shared", "--disable-static"])
             else:
                 configure_args.extend(["--disable-shared", "--enable-static"])
-            self._autotools.configure(args=configure_args, configure_dir=self._source_subfolder)
+            self._autotools.configure(args=configure_args, configure_dir=self._source_subfolder, vars=configure_vars)
         return self._autotools
 
     def build(self):
