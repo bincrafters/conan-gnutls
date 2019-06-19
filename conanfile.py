@@ -13,7 +13,6 @@ class GnuTLSConan(ConanFile):
     author = "Bincrafters <bincrafters@gmail.com>"
     license = "LGPL-2.1"
     exports = ["LICENSE.md"]
-    exports_sources = ["0001-macosx_no_weak_imports.patch", "0002-pkgconfig.patch", "0003-Fix-libcrypto-test-it-must-always-fail.patch"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {'shared': False, 'fPIC': True}
