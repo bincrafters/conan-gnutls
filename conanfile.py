@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import os
 from conans import ConanFile, tools, AutoToolsBuildEnvironment
 from conans.errors import ConanInvalidConfiguration
@@ -10,7 +9,6 @@ class GnuTLSConan(ConanFile):
     url = "https://github.com/bincrafters/conan-gnutls"
     homepage = "https://www.gnutls.org"
     description = "GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols"
-    author = "Bincrafters <bincrafters@gmail.com>"
     license = "LGPL-2.1"
     exports = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
@@ -27,6 +25,7 @@ class GnuTLSConan(ConanFile):
         if self.settings.os == "Windows" and self.settings.compiler == "Visual Studio":
             raise ConanInvalidConfiguration("The GnuTLS package cannot be deployed on Visual Studio.")
         del self.settings.compiler.libcxx
+        del self.settings.compiler.cppstd
 
     def source(self):
         sha256 = "aa81944e5635de981171772857e72be231a7e0f559ae0292d2737de475383e83"
