@@ -14,7 +14,7 @@ class GnuTLSConan(ConanFile):
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {'shared': False, 'fPIC': True}
-    requires = "nettle/3.5", "gmp/6.1.2", "libiconv/1.15"
+    requires = "nettle/3.5", "gmp/6.1.2", "libiconv/1.16"
     _autotools = None
 
     @property
