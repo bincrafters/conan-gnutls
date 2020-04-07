@@ -10,7 +10,6 @@ class GnuTLSConan(ConanFile):
     homepage = "https://www.gnutls.org"
     description = "GnuTLS is a secure communications library implementing the SSL, TLS and DTLS protocols"
     license = "LGPL-2.1"
-    exports = ["LICENSE.md"]
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
     default_options = {'shared': False, 'fPIC': True}
